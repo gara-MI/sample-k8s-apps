@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ars-test-new-ng
+spec:
+  selector:
+    matchLabels:
+      app: ars-test-new-ng
+  template:
+    metadata:
+      labels:
+        app: ars-test-new-ng
+    spec:
+      nodeSelector:
+        ars-testing-tenants: "true"
+      tolerations:
+        - key: ars-node-type
+          operator: Equal
+          value: "ars-testing-tenants"
+          effect: NoExecute
+      containers:
+      - name: ars-test-new-ng
+        image: rrganji/simple-go:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+          requests:
+            memory: "64Mi"
+            cpu: "10m"
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ars-test-new-ng
+spec:
+  selector:
+    app: ars-test-new-ng
+  ports:
+  - port: 80
+    targetPort: 8080
+---
